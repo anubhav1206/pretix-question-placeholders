@@ -9,27 +9,51 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('pretixbase', '0174_merge_20201222_1031'),
+        ("pretixbase", "0174_merge_20201222_1031"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='QuestionPlaceholder',
+            name="QuestionPlaceholder",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False)),
-                ('fallback_content', models.TextField(null=True)),
-                ('use_fallback_when_unanswered', models.BooleanField(default=False)),
-                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='plugin_question_placeholders', to='pretixbase.Question')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("fallback_content", models.TextField(null=True)),
+                ("use_fallback_when_unanswered", models.BooleanField(default=False)),
+                (
+                    "question",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="plugin_question_placeholders",
+                        to="pretixbase.Question",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PlaceholderRule',
+            name="PlaceholderRule",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False)),
-                ('content', models.TextField(null=True)),
-                ('condition_content', models.TextField()),
-                ('condition_operation', models.CharField(max_length=4)),
-                ('placeholder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rules', to='pretix_question_placeholders.QuestionPlaceholder')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("content", models.TextField(null=True)),
+                ("condition_content", models.TextField()),
+                ("condition_operation", models.CharField(max_length=4)),
+                (
+                    "placeholder",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="rules",
+                        to="pretix_question_placeholders.QuestionPlaceholder",
+                    ),
+                ),
             ],
         ),
     ]

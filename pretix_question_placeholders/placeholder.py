@@ -1,7 +1,5 @@
 from pretix.base.mail import BaseMailPlaceholder
 
-from .models import QuestionPlaceholder
-
 
 class QuestionMailPlaceholder(BaseMailPlaceholder):
     def __init__(self, placeholder):

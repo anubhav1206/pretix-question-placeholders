@@ -15,7 +15,9 @@ class PluginApp(PluginConfig):
     class PretixPluginMeta:
         name = gettext_lazy("Email content based on question answers")
         author = "Tobias Kunze"
-        description = gettext_lazy("Add content to your emails based on the questions the customer answered, and the answer they gave.")
+        description = gettext_lazy(
+            "Add content to your emails based on the questions the customer answered, and the answer they gave."
+        )
         visible = True
         version = __version__
         category = "CUSTOMIZATION"

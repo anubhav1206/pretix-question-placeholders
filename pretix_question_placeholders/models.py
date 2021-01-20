@@ -1,8 +1,11 @@
+import warnings
+
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django_scopes import ScopedManager
 
-from pretix.base.models import Question, QuestionOption
+from pretix.base.models import Question
 
 
 class QuestionPlaceholder(models.Model):
@@ -152,8 +155,6 @@ class PlaceholderRule(models.Model):
         return value >= self.value
 
     def matches(self, answer):
-        question = answer.question
-
         if self.comparison_method not in self.allowed_methods:
             warnings.warn(f"Forbidden comparison method {self.comparison_method}.")
             return False
