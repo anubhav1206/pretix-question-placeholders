@@ -1,0 +1,4 @@
+recursive-include pretix_question_placeholders/static *
+recursive-include pretix_question_placeholders/templates *
+recursive-include pretix_question_placeholders/locale *
+include LICENSE
