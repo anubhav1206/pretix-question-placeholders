@@ -1,5 +1,5 @@
 Email content based on question answers
-==========================
+=======================================
 
 This is a plugin for `pretix`_. 
 

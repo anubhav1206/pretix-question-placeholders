@@ -30,6 +30,7 @@ setup(
     version=__version__,
     description="Add content to your emails based on the questions the customer answered, and the answer they gave.",
     long_description=long_description,
+    long_description_content_type="text/x-rst",
     url="https://github.com/rixx/pretix-question-placeholders",
     author="Tobias Kunze",
     author_email="r@rixx.de",
