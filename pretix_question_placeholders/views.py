@@ -1,11 +1,16 @@
+from django.contrib import messages
+from django.db import transaction
+from django.forms.models import inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from pretix.base.forms import I18nFormSet
 from pretix.control.permissions import EventPermissionRequiredMixin
 
 from .forms import (
-    PlaceholderRuleFormSet,
+    PlaceholderRuleForm,
     QuestionPlaceholderCreateForm,
     QuestionPlaceholderEditForm,
 )
@@ -60,13 +65,48 @@ class QuestionPlaceholderEdit(EventPermissionRequiredMixin, UpdateView):
 
     @cached_property
     def formset(self):
-        return PlaceholderRuleFormSet(
-            data=self.request.POST if self.request.method == "POST" else None,
-            placeholder=self.get_object(),
+        formsetclass = inlineformset_factory(
+            QuestionPlaceholder,
+            PlaceholderRule,
+            form=PlaceholderRuleForm,
+            formset=I18nFormSet,
+            extra=0,
+        )
+        return formsetclass(
+            self.request.POST if self.request.method == "POST" else None,
+            queryset=PlaceholderRule.objects.filter(placeholder=self.get_object()),
+            event=self.request.event,
         )
 
+    def save_formset(self, obj):
+        if self.formset.is_valid():
+            for form in self.formset.initial_forms:
+                if form in self.formset.deleted_forms:
+                    if not form.instance.pk:
+                        continue
+                    form.instance.delete()
+                    form.instance.pk = None
+
+            forms = self.formset.ordered_forms + [
+                ef
+                for ef in self.formset.extra_forms
+                if ef not in self.formset.ordered_forms
+                and ef not in self.formset.deleted_forms
+            ]
+            for i, form in enumerate(forms):
+                form.instance.position = i
+                form.instance.placeholder = obj
+                form.save()
+
+            return True
+        return False
+
+    @transaction.atomic
     def form_valid(self, form):
         super().form_valid(form)
+        if not self.save_formset(self.get_object()):
+            return self.get(self.request, *self.args, **self.kwargs)
+        messages.success(self.request, _("Your changes have been saved."))
         return redirect(
             reverse(
                 "plugins:pretix_question_placeholders:list",

@@ -1,7 +1,6 @@
 from django import forms
 from django_scopes.forms import SafeModelChoiceField
 from pretix.base.models.items import Question
-from pretix.control.forms.event import I18nBaseFormSet
 
 from .models import PlaceholderRule, QuestionPlaceholder
 
@@ -34,12 +33,3 @@ class PlaceholderRuleForm(forms.ModelForm):
     class Meta:
         model = PlaceholderRule
         fields = ("content", "condition_content", "condition_operation")
-
-
-PlaceholderRuleFormSet = forms.formset_factory(
-    PlaceholderRuleForm,
-    formset=I18nBaseFormSet,
-    can_order=True,
-    can_delete=True,
-    extra=0,
-)
