@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django_scopes import ScopedManager
+from i18nfield.fields import I18nTextField
 from pretix.base.models import Question
 
 
@@ -21,7 +22,7 @@ class QuestionPlaceholder(models.Model):
             "By default, the placeholder will look like {question_123}, but you can change it to {question_something_else}"
         ),
     )
-    fallback_content = models.TextField(
+    fallback_content = I18nTextField(
         null=True,
         blank=True,
         verbose_name=_("Fallback"),
@@ -81,7 +82,7 @@ class PlaceholderRule(models.Model):
         QuestionPlaceholder, on_delete=models.CASCADE, related_name="rules"
     )
 
-    content = models.TextField(
+    content = I18nTextField(
         null=True,
         blank=True,
         verbose_name=_("Content"),
