@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     url(
         r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/question-placeholders/(?P<pk>[0-9]+)/delete/",
-        views.QuestionPlaceholderCreate.as_view(),
+        views.QuestionPlaceholderDelete.as_view(),
         name="delete",
     ),
 ]
