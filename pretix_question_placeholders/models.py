@@ -15,6 +15,14 @@ class QuestionPlaceholder(models.Model):
         verbose_name=_("Question"),
         related_name="plugin_question_placeholders",
     )
+    slug = models.SlugField(
+        null=True,
+        blank=True,
+        verbose_name=_("Placeholder name"),
+        help_text=_(
+            "By default, the placeholder will look like {question_123}, but you can change it to {question_something_else}"
+        ),
+    )
     fallback_content = models.TextField(
         null=True,
         blank=True,
@@ -30,6 +38,10 @@ class QuestionPlaceholder(models.Model):
     )
 
     objects = ScopedManager(organizer="question__event__organizer")
+
+    @property
+    def placeholder_name(self):
+        return self.slug or self.question_id
 
     def render(self, order):
         from pretix.base.models.orders import QuestionAnswer

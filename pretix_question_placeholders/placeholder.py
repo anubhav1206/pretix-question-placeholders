@@ -1,9 +1,9 @@
-from pretix.base.mail import BaseMailPlaceholder
+from pretix.base.email import BaseMailTextPlaceholder
 
 
-class QuestionMailPlaceholder(BaseMailPlaceholder):
+class QuestionMailPlaceholder(BaseMailTextPlaceholder):
     def __init__(self, placeholder):
-        self._identifier = f"question_{placeholder.question.id}"
+        self._identifier = f"question_{placeholder.placeholder_name}"
         self.placeholder = placeholder
 
     @property
