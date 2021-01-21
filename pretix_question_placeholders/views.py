@@ -50,7 +50,7 @@ class QuestionPlaceholderCreate(EventPermissionRequiredMixin, CreateView):
             kwargs={
                 "organizer": self.request.event.organizer.slug,
                 "event": self.request.event.slug,
-                "layout": self.form.instance.pk,
+                "pk": self.form.instance.pk,
             },
         )
 
