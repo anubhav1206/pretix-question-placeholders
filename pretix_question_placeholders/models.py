@@ -92,6 +92,10 @@ class PlaceholderRule(models.Model):
     condition_operation = models.CharField(
         max_length=4, choices=ComparisonOperation.choices
     )
+    position = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ("position", "id")
 
     @cached_property
     def question_type(self):
