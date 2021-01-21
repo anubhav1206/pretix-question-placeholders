@@ -11,12 +11,12 @@ urlpatterns = [
     url(
         r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/question-placeholders/new/",
         views.QuestionPlaceholderCreate.as_view(),
-        name="create",
+        name="add",
     ),
     url(
         r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/question-placeholders/(?P<pk>[0-9]+)/",
         views.QuestionPlaceholderEdit.as_view(),
-        name="edit",
+        name="show",
     ),
     url(
         r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/question-placeholders/(?P<pk>[0-9]+)/delete/",

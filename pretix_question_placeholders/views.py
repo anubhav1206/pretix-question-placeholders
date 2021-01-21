@@ -19,6 +19,7 @@ from .models import PlaceholderRule, QuestionPlaceholder
 
 class QuestionPlaceholderList(EventPermissionRequiredMixin, ListView):
     permission = "can_change_event_settings"
+    template_name = "pretix_question_placeholders/list.html"
     context_object_name = "question_placeholders"
     model = QuestionPlaceholder
 
@@ -31,6 +32,7 @@ class QuestionPlaceholderList(EventPermissionRequiredMixin, ListView):
 class QuestionPlaceholderCreate(EventPermissionRequiredMixin, CreateView):
     permission = "can_change_event_settings"
     form_class = QuestionPlaceholderCreateForm
+    template_name = "pretix_question_placeholders/create.html"
     model = QuestionPlaceholder
 
     def get_form_kwargs(self):
@@ -41,7 +43,7 @@ class QuestionPlaceholderCreate(EventPermissionRequiredMixin, CreateView):
         super().form_valid(form)
         return redirect(
             reverse(
-                "plugins:pretix_question_placeholders:edit",
+                "plugins:pretix_question_placeholders:show",
                 kwargs={
                     "organizer": self.request.event.organizer.slug,
                     "event": self.request.event.slug,
@@ -53,6 +55,7 @@ class QuestionPlaceholderCreate(EventPermissionRequiredMixin, CreateView):
 
 class QuestionPlaceholderEdit(EventPermissionRequiredMixin, UpdateView):
     permission = "can_change_event_settings"
+    template_name = "pretix_question_placeholders/edit.html"
     form_class = QuestionPlaceholderEditForm
     model = QuestionPlaceholder
 
@@ -120,6 +123,7 @@ class QuestionPlaceholderEdit(EventPermissionRequiredMixin, UpdateView):
 
 class QuestionPlaceholderDelete(EventPermissionRequiredMixin, DeleteView):
     permission = "can_change_event_settings"
+    template_name = "pretix_question_placeholders/delete.html"
     model = QuestionPlaceholder
 
     def get_object(self):
