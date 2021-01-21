@@ -8,7 +8,9 @@ from .models import PlaceholderRule, QuestionPlaceholder
 class QuestionPlaceholderCreateForm(forms.ModelForm):
     def __init__(self, *args, event=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["question"].queryset = Question.objects.filter(event=event)
+        self.fields["question"].queryset = Question.objects.filter(
+            event=event, plugin_question_placeholders__isnull=True
+        )
 
     class Meta:
         model = QuestionPlaceholder

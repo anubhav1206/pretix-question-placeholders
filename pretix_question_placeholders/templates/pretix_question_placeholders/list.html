@@ -1,7 +1,7 @@
 {% extends "pretixcontrol/event/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Questions" %}{% endblock %}
+{% block title %}{% trans "Placeholders" %}{% endblock %}
 
 {% block content %}
     <h1>{% trans "Question-based email placeholders" %}</h1>
@@ -32,7 +32,7 @@
                 <tr>
                     <td>
                         <strong>
-                            <a href="{% url "plugins:pretix_question_placeholders:show" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk}">
+                            <a href="{% url "plugins:pretix_question_placeholders:show" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk %}">
                                 {{ p.placeholder_name }}
                             </a>
                         </strong>
@@ -48,8 +48,8 @@
                         {{ p.rules.all.count }}
                     </td>
                     <td class="text-right flip">
-                        <a href="{% url "plugins:pretix_question_placeholders:show" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
-                        <a href="{% url "plugins:pretix_question_placeholders:delete" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>
+                        <a href="{% url "plugins:pretix_question_placeholders:show" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk %}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                        <a href="{% url "plugins:pretix_question_placeholders:delete" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk %}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>
                     </td>
                 </tr>
             {% endfor %}

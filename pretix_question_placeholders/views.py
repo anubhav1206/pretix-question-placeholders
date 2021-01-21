@@ -38,18 +38,20 @@ class QuestionPlaceholderCreate(EventPermissionRequiredMixin, CreateView):
     def get_form_kwargs(self):
         result = super().get_form_kwargs()
         result["event"] = self.request.event
+        return result
 
     def form_valid(self, form):
-        super().form_valid(form)
-        return redirect(
-            reverse(
-                "plugins:pretix_question_placeholders:show",
-                kwargs={
-                    "organizer": self.request.event.organizer.slug,
-                    "event": self.request.event.slug,
-                    "layout": form.instance.pk,
-                },
-            )
+        self.form = form
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "plugins:pretix_question_placeholders:show",
+            kwargs={
+                "organizer": self.request.event.organizer.slug,
+                "event": self.request.event.slug,
+                "layout": self.form.instance.pk,
+            },
         )
 
 
