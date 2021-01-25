@@ -146,7 +146,7 @@ class PlaceholderRuleForm(I18nModelForm):
                 widget=forms.Select,
                 to_field_name="identifier",
                 empty_label="",
-                initial=initial,
+                initial=q.options.filter(pk=initial).first() if initial else None,
             )
         elif q.type == Question.TYPE_CHOICE_MULTIPLE:
             return forms.ModelMultipleChoiceField(
@@ -217,6 +217,14 @@ class PlaceholderRuleForm(I18nModelForm):
                 initial=initial,
                 widget=WrappedPhoneNumberPrefixWidget(),
             )
+
+    def clean_condition_content(self):
+        content = self.cleaned_data.get("condition_content")
+        if content:
+            content = self.placeholder.question.clean_answer(content)
+            if hasattr(content, "pk"):
+                return content.pk
+            return content
 
     def save(self, *args, **kwargs):
         self.instance.condition_content = self.cleaned_data.get("condition_content")
