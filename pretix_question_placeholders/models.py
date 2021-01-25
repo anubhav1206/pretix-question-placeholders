@@ -32,7 +32,7 @@ class QuestionPlaceholder(models.Model):
         default=False,
         verbose_name=_("Use fallback when the question was not answered"),
         help_text=_(
-            "Turn on if you always want to use the fallback. Otherwise, the placeholder will be ignored when the user has not answered the question."
+            "Usually, the fallback will only be used when the question has been answered, but in a way that none of your rules cover. Turn on if you always want to use the fallback, even when the question has not been answered at all."
         ),
     )
 
