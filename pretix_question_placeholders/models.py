@@ -53,19 +53,14 @@ class QuestionPlaceholder(models.Model):
                 return self.fallback_content
             return
 
-        if len(answers) > 1:
-            warnings.warn(
-                f"Cannot render email placeholders for multiple answers for {order.code}"
-            )
-            return
-
-        answer = answers[0]
-        for rule in self.rules.all():
-            if rule.matches(answer):
-                return rule.content
-        if self.use_fallback_when_unanswered:
+        content = []
+        for answer in answers:
+            for rule in self.rules.all():
+                if rule.matches(answer):
+                    content.append(rule.content)
+        if not content and self.use_fallback_when_unanswered:
             return self.fallback_content
-        return ""
+        return "\n".join([str(c) for c in content])
 
 
 class PlaceholderRule(models.Model):
