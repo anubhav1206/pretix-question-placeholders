@@ -72,6 +72,7 @@ class PlaceholderRuleForm(I18nModelForm):
         super().__init__(*args, **kwargs)
         # Set appropriate options for the question type
         allowed = PlaceholderRule.get_allowed_methods(placeholder.question.type)
+        initial = self.instance.condition_content if self.instance else None
         self.fields["condition_operation"] = forms.ChoiceField(
             choices=(
                 (choice, _)
@@ -81,7 +82,7 @@ class PlaceholderRuleForm(I18nModelForm):
             label="If the user's answer is",
         )
         self.fields["condition_content"] = self.get_content_field(
-            placeholder.question, initial=None
+            placeholder.question, initial=initial
         )
         self.fields["content"].label = "Then add this content to the email"
 
@@ -195,7 +196,7 @@ class PlaceholderRuleForm(I18nModelForm):
                 required=required,
                 help_text=help_text,
                 initial=dateutil.parser.parse(initial).astimezone(tz)
-                if initial and initial
+                if initial
                 else None,
                 widget=SplitDateTimePickerWidget(
                     time_format=get_format_without_seconds("TIME_INPUT_FORMATS"),
@@ -217,9 +218,13 @@ class PlaceholderRuleForm(I18nModelForm):
                 widget=WrappedPhoneNumberPrefixWidget(),
             )
 
+    def save(self, *args, **kwargs):
+        self.instance.condition_content = self.cleaned_data.get("condition_content")
+        return super().save(*args, **kwargs)
+
     class Meta:
         model = PlaceholderRule
-        fields = ("content", "condition_content", "condition_operation")
+        fields = ("content", "condition_operation")
 
 
 class I18nPlaceholderFormSet(I18nModelFormSet):
