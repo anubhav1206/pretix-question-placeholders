@@ -45,21 +45,29 @@ class QuestionPlaceholder(models.Model):
     def render(self, order):
         from pretix.base.models.orders import QuestionAnswer
 
-        answers = QuestionAnswer.objects.filter(
-            orderposition__order=order, question=self.question
-        )
-        if not answers:
-            if self.use_fallback_when_unanswered:
-                return self.fallback_content
-            return
+        matches = {}  # We use the fact that dicts are ordered now
+        any_unanswered = False
 
-        content = []
-        for answer in answers:
-            for rule in self.rules.all():
-                if rule.matches(answer):
-                    content.append(rule.content)
-        if not content and self.use_fallback_when_unanswered:
-            return self.fallback_content
+        for position in order.positions.all():
+            answer = QuestionAnswer.objects.filter(
+                orderposition=position, question=self.question
+            ).first()
+            if answer:
+                match = None
+                for rule in self.rules.all():
+                    if rule.matches(answer):
+                        match = rule
+                        break  # Only the first matching rule is used, for each orderposition.
+                matches[match or "fallback"] = True
+            else:
+                any_unanswered = True
+
+        use_fallback = matches.pop("fallback", False) or (
+            any_unanswered and self.use_fallback_when_unanswered
+        )
+        content = [match.content for match in matches.keys()]
+        if use_fallback:
+            content.append(self.fallback_content)
         return "\n".join([str(c) for c in content])
 
 
