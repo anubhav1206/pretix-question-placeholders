@@ -134,8 +134,8 @@ class PlaceholderRule(models.Model):
             Question.TYPE_STRING: comparison_methods + text_methods,
             Question.TYPE_TEXT: comparison_methods + text_methods,
             Question.TYPE_COUNTRYCODE: comparison_methods,
-            Question.TYPE_CHOICE: comparison_methods,
-            Question.TYPE_CHOICE_MULTIPLE: comparison_methods,
+            Question.TYPE_CHOICE: true_ish_methods,
+            # Question.TYPE_CHOICE_MULTIPLE: comparison_methods,
         }
         return set(methods[question_type])
 
@@ -179,7 +179,10 @@ class PlaceholderRule(models.Model):
 
     def matches(self, answer):
         try:
-            answer_value = answer.question.clean_answer(answer.answer)
+            if answer.question.type == Question.TYPE_CHOICE:
+                answer_value = answer.question.clean_answer(answer.options.first())
+            else:
+                answer_value = answer.question.clean_answer(answer.answer)
         except Exception as e:
             warnings.warn(f"Error parsing answer value: {e}")
             return False
