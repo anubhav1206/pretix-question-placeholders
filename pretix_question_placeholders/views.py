@@ -6,10 +6,10 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
-from pretix.base.forms import I18nFormSet
 from pretix.control.permissions import EventPermissionRequiredMixin
 
 from .forms import (
+    I18nPlaceholderFormSet,
     PlaceholderRuleForm,
     QuestionPlaceholderCreateForm,
     QuestionPlaceholderEditForm,
@@ -68,19 +68,42 @@ class QuestionPlaceholderEdit(EventPermissionRequiredMixin, UpdateView):
             get_placeholders_for_event(self.request.event), pk=self.kwargs["pk"]
         )
 
+    def get_success_url(self):
+        return reverse(
+            "plugins:pretix_question_placeholders:show",
+            kwargs={
+                "organizer": self.request.event.organizer.slug,
+                "event": self.request.event.slug,
+                "pk": self.get_object().pk,
+            },
+        )
+
+    def get_context_data(self, **kwargs):
+        result = super().get_context_data(**kwargs)
+        result["formset"] = self.formset
+        return result
+
+    def get_form_kwargs(self, **kwargs):
+        result = super().get_form_kwargs(**kwargs)
+        result["locales"] = self.request.event.settings.locales
+        return result
+
     @cached_property
     def formset(self):
         formsetclass = inlineformset_factory(
             QuestionPlaceholder,
             PlaceholderRule,
             form=PlaceholderRuleForm,
-            formset=I18nFormSet,
+            formset=I18nPlaceholderFormSet,
             extra=0,
+            can_delete=True,
+            can_order=True,
         )
         return formsetclass(
             self.request.POST if self.request.method == "POST" else None,
             queryset=PlaceholderRule.objects.filter(placeholder=self.get_object()),
             event=self.request.event,
+            placeholder=self.get_object(),
         )
 
     def save_formset(self, obj):

@@ -1,0 +1,96 @@
+{% extends "pretixcontrol/event/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load formset_tags %}
+{% load escapejson %}
+
+{% block title %}{% trans "Placeholders" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Email placeholder" %} {question_{{ form.instance.placeholder_name }}}</h1>
+    <form action="" method="post" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form_errors form %}
+        {% bootstrap_field form.fallback_content layout="control" %}
+        {% bootstrap_field form.use_fallback_when_unanswered layout="control" %}
+            <fieldset>
+                    <div class="formset" data-formset data-formset-prefix="{{ formset.prefix }}">
+                        {{ formset.management_form }}
+                        {% bootstrap_formset_errors formset %}
+                        <div data-formset-body>
+                            {% for form in formset %}
+                                <div data-formset-form>
+                                    <div class="sr-only">
+                                        {{ form.id }}
+                                        {% bootstrap_field form.DELETE form_group_class="" layout="inline" %}
+                                        {% bootstrap_field form.ORDER form_group_class="" layout="inline" %}
+                                    </div>
+                                    <div class="row question-option-row">
+                                        <div class="col-xs-10">
+                                    <span class="text-muted">
+                                        {% blocktrans trimmed with id=form.instance.id %}
+                                            Answer option {{ id }}
+                                        {% endblocktrans %}
+                                    </span>
+                                            {% bootstrap_form_errors form %}
+                                            {% bootstrap_field form.condition_operation layout="control" %}
+                                            {% bootstrap_field form.condition_content layout="control" %}
+                                            {% bootstrap_field form.content layout="control" %}
+                                        </div>
+                                        <div class="col-xs-2 text-right flip">
+                                            <span>&nbsp;</span><br>
+                                            <button type="button" class="btn btn-default" data-formset-move-up-button>
+                                                <i class="fa fa-arrow-up"></i></button>
+                                            <button type="button" class="btn btn-default" data-formset-move-down-button>
+                                                <i class="fa fa-arrow-down"></i></button>
+                                            <button type="button" class="btn btn-danger" data-formset-delete-button>
+                                                <i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <script type="form-template" data-formset-empty-form>
+                            {% escapescript %}
+                                <div data-formset-form>
+                                    <div class="sr-only">
+                                        {{ formset.empty_form.id }}
+                                        {% bootstrap_field formset.empty_form.DELETE form_group_class="" layout="inline" %}
+                                        {% bootstrap_field formset.empty_form.ORDER form_group_class="" layout="inline" %}
+                                    </div>
+                                    <div class="row question-option-row">
+                                        <div class="col-xs-10">
+                                    <span class="text-muted">
+                                        {% trans "New answer option" %}
+                                    </span>
+                                            {% bootstrap_field formset.empty_form.condition_operation layout="control" %}
+                                            {% bootstrap_field formset.empty_form.condition_content layout="control" %}
+                                            {% bootstrap_field formset.empty_form.content layout="control" %}
+                                        </div>
+                                        <div class="col-xs-2 text-right flip">
+                                            <span>&nbsp;</span><br>
+                                            <button type="button" class="btn btn-default" data-formset-move-up-button>
+                                                <i class="fa fa-arrow-up"></i></button>
+                                            <button type="button" class="btn btn-default" data-formset-move-down-button>
+                                                <i class="fa fa-arrow-down"></i></button>
+                                            <button type="button" class="btn btn-danger" data-formset-delete-button>
+                                                <i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endescapescript %}
+                        </script>
+                        <p>
+                            <button type="button" class="btn btn-default" data-formset-add>
+                                <i class="fa fa-plus"></i> {% trans "Add a new option" %}</button>
+                        </p>
+                    </div>
+                </div>
+            </fieldset>
+        <div class="form-group submit-group">
+            <button type="submit" class="btn btn-primary btn-save">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+{% endblock %}

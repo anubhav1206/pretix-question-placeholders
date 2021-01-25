@@ -16,3 +16,6 @@ class QuestionMailPlaceholder(BaseMailTextPlaceholder):
 
     def render(self, context):
         return self.placeholder.render(context["order"])
+
+    def render_sample(self, context):
+        return self.placeholder.fallback_content

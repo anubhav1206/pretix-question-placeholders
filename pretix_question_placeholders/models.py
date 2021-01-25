@@ -70,8 +70,8 @@ class QuestionPlaceholder(models.Model):
 
 class PlaceholderRule(models.Model):
     class ComparisonOperation(models.TextChoices):
-        EQUALS = "eq", _("Equals")
-        IEQUALS = "ieq", _("Equals (case insensitive)")
+        EQUALS = "eq", _("Equal to")
+        IEQUALS = "ieq", _("Equal to (case insensitive)")
         LESS_THAN = "lt", _("Less than / earlier than")
         LESS_OR_EQUAL_THAN = "lte", _("Less or same as / earlier or same as")
         MORE_THAN = "gt", _("Greater than / later than")
@@ -105,35 +105,40 @@ class PlaceholderRule(models.Model):
     def value(self):
         return self.placeholder.question.clean_answer(self.condition_content)
 
-    @cached_property
-    def allowed_methods(self):
-        global_methods = [self.ComparisonOperation.IS_TRUE]
+    @classmethod
+    def get_allowed_methods(cls, question_type):
+        global_methods = [cls.ComparisonOperation.IS_TRUE]
+        true_ish_methods = global_methods + [cls.ComparisonOperation.EQUALS]
 
         comparison_methods = global_methods + [
-            self.ComparisonOperation.EQUALS,
-            self.ComparisonOperation.LESS_THAN,
-            self.ComparisonOperation.LESS_OR_EQUAL_THAN,
-            self.ComparisonOperation.MORE_THAN,
-            self.ComparisonOperation.MORE_OR_EQUAL_THAN,
+            cls.ComparisonOperation.EQUALS,
+            cls.ComparisonOperation.LESS_THAN,
+            cls.ComparisonOperation.LESS_OR_EQUAL_THAN,
+            cls.ComparisonOperation.MORE_THAN,
+            cls.ComparisonOperation.MORE_OR_EQUAL_THAN,
         ]
 
-        text_methods = [self.ComparisonOperation.IEQUALS]
+        text_methods = [cls.ComparisonOperation.IEQUALS]
 
         methods = {
-            Question.TYPE_BOOLEAN: global_methods + [self.ComparisonOperation.EQUALS],
+            Question.TYPE_BOOLEAN: true_ish_methods,
             Question.TYPE_FILE: global_methods,
             Question.TYPE_DATE: comparison_methods,
             Question.TYPE_DATETIME: comparison_methods,
             Question.TYPE_TIME: comparison_methods,
             Question.TYPE_NUMBER: comparison_methods,
-            Question.TYPE_PHONENUMBER: comparison_methods,
+            Question.TYPE_PHONENUMBER: true_ish_methods,
             Question.TYPE_STRING: comparison_methods + text_methods,
             Question.TYPE_TEXT: comparison_methods + text_methods,
             Question.TYPE_COUNTRYCODE: comparison_methods,
             Question.TYPE_CHOICE: comparison_methods,
             Question.TYPE_CHOICE_MULTIPLE: comparison_methods,
         }
-        return set(methods[self.question_type])
+        return set(methods[question_type])
+
+    @cached_property
+    def allowed_methods(self):
+        return self.get_allowed_methods(self.question_type)
 
     @cached_property
     def comparison_method(self):
@@ -146,7 +151,7 @@ class PlaceholderRule(models.Model):
             self.ComparisonOperation.MORE_OR_EQUAL_THAN: self._compare_more_or_equal_than,
             self.ComparisonOperation.IS_TRUE: self._compare_boolean,
         }
-        return methods[self.comparison_operation]
+        return methods[self.condition_operation]
 
     def _compare_boolean(self, value):
         return bool(value)
@@ -170,12 +175,8 @@ class PlaceholderRule(models.Model):
         return value >= self.value
 
     def matches(self, answer):
-        if self.comparison_method not in self.allowed_methods:
-            warnings.warn(f"Forbidden comparison method {self.comparison_method}.")
-            return False
-
         try:
-            answer_value = answer.question.clean(answer.answer)
+            answer_value = answer.question.clean_answer(answer.answer)
         except Exception as e:
             warnings.warn(f"Error parsing answer value: {e}")
             return False
