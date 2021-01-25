@@ -18,7 +18,10 @@ except Exception:
 
 class CustomBuild(build):
     def run(self):
-        management.call_command("compilemessages", verbosity=1)
+        try:
+            management.call_command("compilemessages", verbosity=1)
+        except Exception:
+            pass
         build.run(self)
 
 
