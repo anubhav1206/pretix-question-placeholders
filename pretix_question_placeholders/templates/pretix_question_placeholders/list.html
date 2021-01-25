@@ -33,7 +33,7 @@
                     <td>
                         <strong>
                             <a href="{% url "plugins:pretix_question_placeholders:show" organizer=request.event.organizer.slug event=request.event.slug pk=p.pk %}">
-                                {{ p.placeholder_name }}
+                                {question_{{ p.placeholder_name }}}
                             </a>
                         </strong>
                     </td>

@@ -1,6 +1,7 @@
 import dateutil.parser
 import pytz
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from django_scopes.forms import SafeModelChoiceField
 from i18nfield.forms import I18nModelFormSet
@@ -29,10 +30,26 @@ from .models import PlaceholderRule, QuestionPlaceholder
 
 class QuestionPlaceholderCreateForm(forms.ModelForm):
     def __init__(self, *args, event=None, **kwargs):
+        self.event = event
         super().__init__(*args, **kwargs)
-        self.fields["question"].queryset = Question.objects.filter(
-            event=event, plugin_question_placeholders__isnull=True
-        )
+        self.fields["question"].queryset = Question.objects.filter(event=event)
+
+    def clean_slug(self):
+        value = self.cleaned_data.get("slug")
+        qs = QuestionPlaceholder.objects.filter(question__event=self.event)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.pk)
+        if value and qs.filter(slug=value).exists():
+            raise forms.ValidationError(_("This slug is already in use!"))
+        if qs.filter(
+            slug__isnull=True, question_id=self.cleaned_data.get("question").id
+        ).exists():
+            raise forms.ValidationError(
+                _(
+                    "This question already has a placeholder – please choose a slug to be able to tell them apart!"
+                )
+            )
+        return value
 
     class Meta:
         model = QuestionPlaceholder
