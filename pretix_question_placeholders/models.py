@@ -70,7 +70,7 @@ class QuestionPlaceholder(models.Model):
         content = [match.content for match in matches.keys()]
         if use_fallback:
             content.append(self.fallback_content)
-        return "\n".join([str(c) for c in content])
+        return "\n\n".join([str(c) for c in content])
 
 
 class PlaceholderRule(models.Model):
