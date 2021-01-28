@@ -93,7 +93,7 @@ class PlaceholderRule(models.Model):
         verbose_name=_("Content"),
         help_text=_("Will be inserted into the email if the condition matches."),
     )
-    condition_content = models.TextField()
+    condition_content = models.TextField(null=True, blank=True)
     condition_operation = models.CharField(
         max_length=4, choices=ComparisonOperation.choices
     )
