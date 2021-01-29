@@ -3,7 +3,11 @@ Email content based on question answers
 
 This is a plugin for `pretix`_. 
 
-Add content to your emails based on the questions the customer answered, and the answer they gave.
+Add content to your emails based on the questions the customer answered, and
+the answer they gave.
+
+You can create multiple new placeholders, and can add several rules for each of
+them, with fallback texts for other answers or unanswered questions.
 
 Development setup
 -----------------
