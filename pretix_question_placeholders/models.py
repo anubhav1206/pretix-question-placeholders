@@ -67,7 +67,8 @@ class QuestionPlaceholder(models.Model):
         use_fallback = matches.pop("fallback", False) or (
             any_unanswered and self.use_fallback_when_unanswered
         )
-        content = [match.content for match in matches.keys()]
+        matches = sorted(list(matches.keys()), key=lambda r: r.position)
+        content = [match.content for match in matches]
         if use_fallback:
             content.append(self.fallback_content)
         return "\n\n".join([str(c) for c in content])
